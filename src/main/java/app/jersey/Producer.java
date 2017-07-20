@@ -8,15 +8,21 @@ import java.util.Properties;
 
 public class Producer {
 	
-	private final GradientsBase data;
+	private final String servers;
+	private final String topic;
 	
-	Producer(GradientsBase data) {
-		this.data = data;
+	Producer(String host, String port, String topic) {
+		this.servers = new StringBuilder()
+						   .append(host)
+						   .append(":")
+						   .append(port)
+						   .toString();
+		this.topic = topic;
 	}
 	
-    public void run() {
+    public void run(GradientsBase data) {
 		Properties props = new Properties();
-        props.put("bootstrap.servers", "kafka:29092");
+        props.put("bootstrap.servers", servers);
         props.put("client.id", "GradientsProducer");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -25,10 +31,11 @@ public class Producer {
     	try {
 	        for (final Gradients gradients : data.getGradients()) {
 	        	for (final String style : gradients.getStyles()) {
-	
-	                ProducerRecord<String, String> data = new ProducerRecord<String, String>(
-	                    "small_topic", gradients.getColor(), style);
-	                producer.send(data);
+	        		
+	        		final String color = gradients.getColor();
+	                final ProducerRecord<String, String> r = new ProducerRecord<>(topic, color, style);
+	                
+	                producer.send(r);
 	            }	
 	        }
     	} finally {

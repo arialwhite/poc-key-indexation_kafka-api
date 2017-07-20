@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Path("/gradients")
 public class GradientsEndpoint {
 
-	private final Service service;
+	private final KafkaApiService service;
 
-	public Endpoint(Service service) {
+	public GradientsEndpoint(KafkaApiService service) {
 		this.service = service;
 	}
 
